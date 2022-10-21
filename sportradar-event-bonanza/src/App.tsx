@@ -3,20 +3,22 @@ import logo1024 from './logo1024.png';
 import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
-
-import socketIOClient from 'socket.io-client';
+import {io} from 'socket.io-client';
 
 function App() {
-  const [endpoint, setEndpoint] = useState('http://localhost:8069/ws-message');
+  const [endpoint, setEndpoint] = useState('http://192.168.0.87:8069/socket.io');
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
 
+  let socket = io(endpoint);
+
   useEffect(() => {
-    const socket = socketIOClient(endpoint);
+    socket != null && socket.disconnect();
+    socket = io(endpoint);
     socket.on('FromAPI', (data) => {
       setMessage(data);
     });
-  }, []);
+  }, [endpoint]);
 
   let onConnected = () => {
     console.log('Connected');
@@ -36,12 +38,12 @@ function App() {
         onKeyUp={(e) => {
           if (e.keyCode == 0x0d) setEndpoint(EndpointText);
         }}
-        style={{ color: 'white' }}
+       
       />
       <button onClick={() => setEndpoint(EndpointText)}>Update</button>
       <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
         <Container>
-          <p>{endpoint}</p>
+          <p  style={{ color: 'white' }}>{endpoint}</p>
           <Row>
             <Col md={2}>
               <img src={logo1024} className="App-logo" alt="logo" height={90} />

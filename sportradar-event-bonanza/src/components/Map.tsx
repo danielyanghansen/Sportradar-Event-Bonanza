@@ -25,10 +25,6 @@ const Map = () => {
           center: [lng, lat],
           zoom: zoom,
           projection: { name: 'globe' },
-          maxBounds: [
-            [-180, -90],
-            [180, 90],
-          ],
           logoPosition: 'bottom-right',
         })
       : undefined;
