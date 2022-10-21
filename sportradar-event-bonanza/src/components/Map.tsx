@@ -69,8 +69,7 @@ const Map = () => {
             <Tooltip
               station_name={currentStationInfo.name}
               num_bikes_available={currentStationStatus.num_bikes_available}
-              num_docks_available={currentStationStatus.num_docks_available}
-              capacity={currentStationInfo.capacity}
+
             />,
             popupNode
           );

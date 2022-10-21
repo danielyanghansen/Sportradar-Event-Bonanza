@@ -1,28 +1,27 @@
 .tooltip-info {
-    align-items: center;
-    background-color: rgba(35, 55, 75, 0.9);
-    border: 1px solid #4094ae;
-    border-radius: 16px;
-    color: #ffffff;
-    font-weight: normal;
-    justify-content: center;
-    margin: 1;
-    padding: 2px;
-    text-align: center;
-    font-family: monospace;
-    z-index: 1;
-    margin: 12px;
-    border-radius: 4px;
-  }
-  
-  .station-name {
-    color: rgba(0, 0, 0, 0.7);
-    font-size: 0.875rem;
-    margin: 0;
-    text-align: center;
-  }
-  
-  .mapboxgl-popup-content {
-    min-width: 200px;
-  }
-  
+  align-items: center;
+  background-color: rgba(35, 55, 75, 0.9);
+  border: 1px solid #4094ae;
+  border-radius: 16px;
+  color: #ffffff;
+  font-weight: normal;
+  justify-content: center;
+  margin: 1;
+  padding: 2px;
+  text-align: center;
+  font-family: monospace;
+  z-index: 1;
+  margin: 12px;
+  border-radius: 4px;
+}
+
+.station-name {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: center;
+}
+
+.mapboxgl-popup-content {
+  min-width: 200px;
+}
