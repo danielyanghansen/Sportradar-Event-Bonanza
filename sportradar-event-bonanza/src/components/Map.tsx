@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
-import "./Map.css";
+import mapboxgl, { Map as MapboxMap } from "mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import ReactDOM from "react-dom";
 import Tooltip from "./Tooltip.jsx";
 
@@ -9,44 +8,22 @@ mapboxgl.accessToken =
 
 const Map = () => {
   const client_identifier = "sportradar-event-bonanza";
-  const mapContainer = useRef(null);
-  const map = useRef(null);
+  const mapContainer = useRef<HTMLDivElement>();
+  const map = useRef<MapboxMap>();
   const lng = 10.75;
   const lat = 59.92;
   const zoom = 1;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
-  const [stations, setStations] = useState();
-  const [stationsStatus, setStationsStatus] = useState();
+  const [stations, setStations] = useState<any>();
+  const [stationsStatus, setStationsStatus] = useState<any>();
 
-  const fetchStations = async (url, setter) => {
-    return fetch(url, {
-      headers: {
-        "Client-Identifier": { client_identifier },
-      },
-    })
-      .then((res) => res.json())
-      .then((json) => setter(json.data.stations));
-  };
-
-  useEffect(() => {
-    fetchStations(
-      "https://gbfs.urbansharing.com/oslobysykkel.no/station_information.json",
-      setStations
-    );
-    fetchStations(
-      "https://gbfs.urbansharing.com/oslobysykkel.no/station_status.json",
-      setStationsStatus
-    );
-  }, []);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
-    if (!stations || !stationsStatus) return;
-
     createMap();
-    createToolTipOnClick();
+  });
 
-    const stationsGeoJSONArray = stations.map((station) => {
+    const stationsGeoJSONArray = stations?.map((station : any) => {
       return {
         type: "Feature",
         geometry: {
@@ -55,27 +32,26 @@ const Map = () => {
         },
         properties: { station_id: station.station_id },
       };
-    });
+    }); 
 
     const stationsCollection = {
       type: "FeatureCollection",
       features: stationsGeoJSONArray,
     };
-    addPointsToMap();
+    //addPointsToMap();
 
-    function createMap() {
-        map.current = new mapboxgl.Map({
+    function createMap() {  
+      map.current = mapContainer.current && new mapboxgl.Map({
             container: mapContainer.current,
             style: "mapbox://styles/mapbox/light-v10",
             center: [lng, lat],
             zoom: zoom,
-            pitch: 45,
-            bearing: -17.6,
-            antialias: true
+            antialias: true,
+            projection: {name: 'globe'}
         });
     }
 
-    function createToolTipOnClick() {
+    /*function createToolTipOnClick() {
       map.current.on("click", (e) => {
         const features = map.current.queryRenderedFeatures(e.point, {
           layers: ["stationsMapLayer"],
@@ -122,11 +98,11 @@ const Map = () => {
             "circle-stroke-color": "#222222",
             "circle-stroke-width": 2,
           },
-        });
-      });
-    }
-  }, [stations, stationsStatus]);
+        });*/
+      //});
+   // }
+  //}, []);
 
-  return <div ref={mapContainer} className="map-container"></div>;
+  return <div className="map-container"></div>;
 };
 export default Map;
