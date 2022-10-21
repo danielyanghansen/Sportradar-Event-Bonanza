@@ -3,6 +3,7 @@ import mapboxgl, { Map as MapboxMap } from 'mapbox-gl'; // eslint-disable-line i
 import ReactDOM from 'react-dom';
 import Tooltip from './Tooltip.jsx';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import './Map.css';
 
 mapboxgl.accessToken =
   'pk.eyJ1Ijoib2xsZmthaWgiLCJhIjoiY2w5aWp1MW9vMDhqNjN1dDVyejlwODVwMSJ9.XA-kvHJb1k-Lkwt53KczzQ';
@@ -13,7 +14,7 @@ const Map = () => {
   const map = useRef<MapboxMap>();
   const lng = 10.75;
   const lat = 59.92;
-  const zoom = 1;
+  const zoom = 3;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
 
   const createMap = () => {
@@ -89,6 +90,6 @@ const Map = () => {
   // }
   //}, []);
 
-  return <div ref={mapContainer} className="map-container"></div>;
+  return <div ref={mapContainer} className="map-container" ></div>;
 };
 export default Map;
