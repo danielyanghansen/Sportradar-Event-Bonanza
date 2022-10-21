@@ -12,7 +12,7 @@
   font-family: monospace;
   z-index: 1;
   margin: 12px;
-  border-radius: 4px;
+  border-radius: 0.3rem;
 }
 
 .station-name {
