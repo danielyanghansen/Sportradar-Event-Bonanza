@@ -21,7 +21,7 @@ const Map = () => {
     map.current = mapContainer.current
       ? new mapboxgl.Map({
           container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/light-v10',
+          style: 'mapbox://styles/mapbox/dark-v10',
           center: [lng, lat],
           zoom: zoom,
           projection: { name: 'globe' },
@@ -90,6 +90,6 @@ const Map = () => {
   // }
   //}, []);
 
-  return <div ref={mapContainer} className="map-container" ></div>;
+  return <div ref={mapContainer} className="map-container"></div>;
 };
 export default Map;
