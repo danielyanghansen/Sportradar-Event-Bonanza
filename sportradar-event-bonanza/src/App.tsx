@@ -4,11 +4,69 @@ import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import {io} from 'socket.io-client';
+import MatchList, { MatchListElementProps } from './components/MatchList';
+import SimpleModal from './components/SimpleModal';
+
+import socketIOClient from 'socket.io-client';
+
+function MockOnClick() {
+  console.log('OnClick triggered');
+}
+
+const mockListElements: Array<MatchListElementProps> = [
+  {
+    matchName: 'Test1 Test1 Test1 Test1 Test1 Test1 Test1 Test1 ',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test2',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test3',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test4',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test5',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test6',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test7',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test8',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test9',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test10',
+    onClick: MockOnClick,
+  },
+  {
+    matchName: 'Test11',
+    onClick: MockOnClick,
+  },
+];
 
 function App() {
   const [endpoint, setEndpoint] = useState('http://192.168.0.87:8069/socket.io');
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
+/*   const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState("testing content");
+  const [modalCoords, setModalCoords] = useState([1000,100]); */
 
   let socket = io(endpoint, {transports: ['websocket']});
 
@@ -62,11 +120,18 @@ function App() {
           <p>
             Her kan du se en oversikt over alle arrangementer som er i gang.
           </p>
+          <MatchList matches={mockListElements} />
         </Col>
         <Col>
           <Map />
         </Col>
       </Row>
+{/*         <SimpleModal
+          xoffset = {modalCoords[0]}
+          yoffset = {modalCoords[1]}
+          showModal = {true}
+          content = {modalContent}
+          /> */}
     </div>
   );
 }
