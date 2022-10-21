@@ -10,7 +10,7 @@ function App() {
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
 
-  let socket = io(endpoint);
+  let socket = io(endpoint, {transports: ['websocket']});
 
   useEffect(() => {
     socket != null && socket.disconnect();
