@@ -23,13 +23,15 @@
     "@types/mapbox-gl": "^2.7.6",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "@types/react-dom": "^18.0.0",
+    "prettier": "^2.5.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write \"**/*.{js,ts,tsx,jsx,css,md,scss,html,json}\""
   },
   "eslintConfig": {
     "extends": [
@@ -48,8 +50,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "prettier": "2.7.1"
   }
 }
