@@ -4,7 +4,6 @@ import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import MatchList, { MatchListElementProps } from './components/MatchList';
-import SockJS from 'sockjs-client';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
 import {
   MatchStatus,
@@ -20,11 +19,6 @@ const mockListElements: Array<MatchListElementProps> = [
 ];
 
 function App() {
-  const [endpoint, setEndpoint] = useState(
-    'http://192.168.0.87:8069/socket.io'
-  );
-  const [EndpointText, setEndpointText] = useState(endpoint);
-  const [message, setMessage] = useState('ws message');
   const [sportFilter, setSportFilter] = useState<number | undefined>(1);
   const [data, setData] = useState<Object | undefined>(undefined);
 
@@ -151,47 +145,11 @@ function App() {
     };
   }); */
 
-  useEffect(() => {
-    const sock = new SockJS(endpoint);
-    sock.onopen = function () {
-      console.log('open');
-      sock.send('test');
-    };
-
-    sock.onmessage = function (e: any) {
-      console.log('message', e.data);
-      setMessage(e.data);
-      sock.close();
-    };
-
-    sock.onclose = function () {
-      console.log('close');
-    };
-
-    return () => {
-      sock.close();
-    };
-  }, [endpoint]);
-
-  useEffect(() => {
-    console.log('WS Recv: ' + message);
-  }, [message]);
-
   return (
     <div className="App" style={{ alignContent: 'center' }}>
       {/* text field and button to update endpoint */}
-      <input
-        type="text"
-        value={EndpointText}
-        onChange={(e) => setEndpointText(e.target.value)}
-        onKeyUp={(e) => {
-          if (e.keyCode === 0x0d) setEndpoint(EndpointText);
-        }}
-      />
-      <button onClick={() => setEndpoint(EndpointText)}>Update</button>
       <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
         <Container>
-          <p style={{ color: 'white' }}>{endpoint}</p>
           <Row>
             <Col md={2}>
               <img src={logo1024} className="App-logo" alt="logo" height={90} />
