@@ -14,46 +14,57 @@ const mockListElements: Array<MatchListElementProps> = [
   {
     matchName: 'Test1 Test1 Test1 Test1 Test1 Test1 Test1 Test1 ',
     onClick: MockOnClick,
+    coordinates: [59.9139, 10.7522],
   },
   {
     matchName: 'Test2',
     onClick: MockOnClick,
+    coordinates: [41.405, 2.021],
   },
   {
     matchName: 'Test3',
     onClick: MockOnClick,
+    coordinates: [40.41, -3.662],
   },
   {
     matchName: 'Test4',
     onClick: MockOnClick,
+    coordinates: [51.43, -0.08],
   },
   {
     matchName: 'Test5',
     onClick: MockOnClick,
+    coordinates: [48.827, 2.3],
   },
   {
     matchName: 'Test6',
     onClick: MockOnClick,
+    coordinates: [51.046, 3.718],
   },
   {
     matchName: 'Test7',
     onClick: MockOnClick,
+    coordinates: [50.905, 6.848],
   },
   {
     matchName: 'Test8',
     onClick: MockOnClick,
+    coordinates: [64.9, 14.8],
   },
   {
     matchName: 'Test9',
     onClick: MockOnClick,
+    coordinates: [65.9, 15.8],
   },
   {
     matchName: 'Test10',
     onClick: MockOnClick,
+    coordinates: [66.9, 16.8],
   },
   {
     matchName: 'Test11',
     onClick: MockOnClick,
+    coordinates: [67.9, 17.8],
   },
 ];
 
@@ -127,7 +138,7 @@ function App() {
           <MatchList matches={mockListElements} />
         </Col>
         <Col>
-          <Map />
+          <Map matches={mockListElements} />
         </Col>
       </Row>
       {/*         <SimpleModal

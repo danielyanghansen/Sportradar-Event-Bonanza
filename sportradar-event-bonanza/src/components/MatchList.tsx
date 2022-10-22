@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 export type MatchListElementProps = {
   matchName: string;
   onClick: () => void;
+  coordinates?: [lat: number, lng: number];
 };
 export type MatchListProps = {
   matches?: Array<MatchListElementProps>;

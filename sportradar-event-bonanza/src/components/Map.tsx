@@ -4,17 +4,20 @@ import { render } from 'react-dom';
 import Tooltip from './Tooltip.jsx';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
+import { MatchListProps } from './MatchList.js';
+import { match } from 'assert';
 
 mapboxgl.accessToken =
   'pk.eyJ1Ijoib2xsZmthaWgiLCJhIjoiY2w5aWp1MW9vMDhqNjN1dDVyejlwODVwMSJ9.XA-kvHJb1k-Lkwt53KczzQ';
 
-const Map = () => {
+const Map = ({ matches }: MatchListProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapboxMap>();
   const lng = 0; //10.75;
   const lat = 30; //59.92;
   const zoom = 3;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
+  let currentElement = 0;
 
   const createMap = () => {
     map.current = mapContainer.current
@@ -36,7 +39,7 @@ const Map = () => {
     createMap();
     createToolTipOnClick();
     addPointsToMap(10.7565162, 59.911028, '', 13);
-    let stop: any;
+    let stop: NodeJS.Timer;
     setTimeout(() => {
       map.current?.once('idle', () => {
         map.current?.resize();
@@ -50,6 +53,24 @@ const Map = () => {
       clearInterval(stop);
     }, 20000);
   }, []);
+
+  setInterval(() => {
+    if (!!matches) {
+      console.log(matches[currentElement].coordinates);
+      matches[currentElement].coordinates &&
+        map.current?.flyTo({
+          center: [
+            matches[currentElement].coordinates!![1],
+            matches[currentElement].coordinates!![0],
+          ],
+          zoom: 8,
+          speed: 0.5,
+          curve: 1,
+          easing: (t) => t,
+        });
+      currentElement = (currentElement + 1) % matches.length;
+    }
+  }, 30000);
 
   // setInterval(() => {
   // map.current?.panBy([0.2, 0], { duration: 0.5 });
