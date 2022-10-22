@@ -20,7 +20,7 @@ const MatchList = ({ matches }: MatchListProps) => {
   const MatchListElement = (match: MatchListElementProps) => {
     const sportsType: string = match.matchObj._sid as string;
     const matchScore: string = !!match.matchObj
-      ? match.matchObj.result.home + ' : ' + match.matchObj.result.away
+      ? match.matchObj.result.home + ' - ' + match.matchObj.result.away
       : 'Loading...';
 
     /* const sportsName : string = (sportsType in SPORT_ID_DICT)
@@ -44,6 +44,7 @@ const MatchList = ({ matches }: MatchListProps) => {
           borderWidth: borderWidth,
           borderRadius: '15px',
           minHeight: '50px',
+          marginBottom: '3px',
         }}
       >
         <Image
@@ -53,7 +54,7 @@ const MatchList = ({ matches }: MatchListProps) => {
           style={{ maxHeight: '50px' }}
         />
         <p>{match.matchName}</p>
-        <p>{matchScore}</p>
+        <p style={{fontSize:'2.5em'}}><strong>{matchScore}</strong></p>
         {/*         <p>{match.matchObj.result.home} : {match.matchObj.result.away}</p> */}
       </button>
     );
@@ -74,7 +75,7 @@ const MatchList = ({ matches }: MatchListProps) => {
   useEffect(() => {}, [highlightedMatch]); //for blinking and showcasing the selected match
 
   return (
-    <div style={{ maxHeight: '90%', overflowY: 'hidden', padding: '20px' }}>
+    <div style={{ maxHeight: '90%', overflowY: 'hidden', padding: '20px'}}>
       {!!matches ? (
         matches.map((m) => (
           <MatchListElement
@@ -84,6 +85,7 @@ const MatchList = ({ matches }: MatchListProps) => {
               m.onClick();
             }}
             matchObj={m.matchObj}
+            
           />
         ))
       ) : (
