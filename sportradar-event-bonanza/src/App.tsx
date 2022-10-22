@@ -5,6 +5,7 @@ import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import MatchList, { MatchListElementProps } from './components/MatchList';
 import SockJS from 'sockjs-client';
+import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents';
 
 function MockOnClick() {
   console.log('OnClick triggered');
@@ -69,12 +70,13 @@ const mockListElements: Array<MatchListElementProps> = [
 ];
 
 function App() {
-  const [endpoint, setEndpoint] = useState('http://localhost:8069/socket');
+  const [endpoint, setEndpoint] = useState(
+    'http://192.168.0.87:8069/socket.io'
+  );
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
-  /*   const [showModal, setShowModal] = useState(false);
-  const [modalContent, setModalContent] = useState("testing content");
-  const [modalCoords, setModalCoords] = useState([1000,100]); */
+
+  //const matchList: Match[] = useReceiveEvents() as Match[];
 
   useEffect(() => {
     const sock = new SockJS(endpoint);
@@ -83,7 +85,7 @@ function App() {
       sock.send('test');
     };
 
-    sock.onmessage = function (e) {
+    sock.onmessage = function (e:any) {
       console.log('message', e.data);
       setMessage(e.data);
       sock.close();
@@ -99,7 +101,7 @@ function App() {
   }, [endpoint]);
 
   useEffect(() => {
-    console.log(message);
+    console.log('WS Recv: ' + message);
   }, [message]);
 
   return (
@@ -141,12 +143,6 @@ function App() {
           <Map matches={mockListElements} />
         </Col>
       </Row>
-      {/*         <SimpleModal
-          xoffset = {modalCoords[0]}
-          yoffset = {modalCoords[1]}
-          showModal = {true}
-          content = {modalContent}
-          /> */}
     </div>
   );
 }
