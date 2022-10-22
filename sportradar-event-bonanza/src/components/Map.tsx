@@ -23,6 +23,7 @@ const Map = ({ matches }: Props) => {
   const zoom = 5;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
   let currentElement = 0;
+  let dooID: NodeJS.Timer;
 
   const createMap = () => {
     map.current = mapContainer.current
@@ -44,7 +45,7 @@ const Map = ({ matches }: Props) => {
     createMap();
     createToolTipOnClick();
     setTimeout(() => {
-      addMapLayer(startLng, startLat);
+      addMapLayer(startLng, startLat, 50);
     }, 1000);
     /*addPointsToMap(10.7565162, 59.911028, '', 13);
     let stop: NodeJS.Timer;
@@ -63,6 +64,7 @@ const Map = ({ matches }: Props) => {
   }, []);
 
   setInterval(() => {
+    if (dooID) clearInterval(dooID);
     if (!!matches) {
       matches[currentElement].coordinates &&
         map.current?.flyTo({
@@ -77,7 +79,8 @@ const Map = ({ matches }: Props) => {
         });
       console.log(
         getMatchName(matches[currentElement]),
-        matches[currentElement].coordinates!![0]
+        matches[currentElement].coordinates!![0],
+        matches[currentElement].coordinates!![1]
       );
       addPointsToMap(
         matches[currentElement].coordinates!![0],
@@ -87,11 +90,10 @@ const Map = ({ matches }: Props) => {
       );
       currentElement = (currentElement + 1) % matches.length;
     }
+    dooID = setInterval(() => {
+      map.current?.panBy([0.2, 0], { duration: 0.5 });
+      }, 1);
   }, flyBetweenPlacesInterval);
-
-  // setInterval(() => {
-  // map.current?.panBy([0.2, 0], { duration: 0.5 });
-  // }, 1);
 
   const createToolTipOnClick = () => {
     map.current?.on('click', (e) => {
@@ -117,7 +119,7 @@ const Map = ({ matches }: Props) => {
     });
   };
 
-  const addMapLayer = (lat: number, lng: number) => {
+  const addMapLayer = (lat: number, lng: number, size: number) => {
     map.current &&
       map.current?.addSource('eventsMapLayer', {
         type: 'geojson',
@@ -135,17 +137,31 @@ const Map = ({ matches }: Props) => {
           ],
         },
       });
-    map.current?.addLayer({
+
+      const el = document.createElement('div');
+      el.className = 'pulse';
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.borderRadius = '50%';
+      el.style.backgroundColor = 'rgba(232, 0, 0, 0.75)';
+
+      new mapboxgl.Marker(el)
+        .setLngLat([lng, lat])
+        .addTo(map.current!!);
+
+      el.style.animation = 'pulse 1s infinite';
+    
+    /*map.current?.addLayer({
       id: 'eventsMapLayer',
       type: 'circle',
       source: 'eventsMapLayer',
       paint: {
         'circle-color': '#fd0000',
-        'circle-radius': 8,
+        'circle-radius': size,
         'circle-stroke-color': '#222222',
         'circle-stroke-width': 2,
       },
-    });
+    });*/
     map.current?.setTerrain({
       source: 'mapbox-dem',
       exaggeration: [

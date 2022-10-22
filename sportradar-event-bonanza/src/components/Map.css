@@ -1,3 +1,26 @@
 .map-container {
   height: 87.5vh;
 }
+.marker {
+  background-image: url('../logo1024.png');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(204, 16, 52, 0.4);
+  }
+  70% {
+    transform: scale(2);
+    box-shadow: 0 0 0 10px rgba(204, 16, 52, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(204, 16, 52, 0);
+  }
+}
