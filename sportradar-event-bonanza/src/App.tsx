@@ -3,8 +3,11 @@ import logo1024 from './logo1024.png';
 import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
+import {io} from 'socket.io-client';
 import MatchList, { MatchListElementProps } from './components/MatchList';
-import SockJS from 'sockjs-client';
+import SimpleModal from './components/SimpleModal';
+
+import socketIOClient from 'socket.io-client';
 
 function MockOnClick() {
   console.log('OnClick triggered');
@@ -58,35 +61,26 @@ const mockListElements: Array<MatchListElementProps> = [
 ];
 
 function App() {
-  const [endpoint, setEndpoint] = useState('http://localhost:8069/socket');
+  const [endpoint, setEndpoint] = useState('http://192.168.0.87:8069/socket.io');
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
 /*   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState("testing content");
   const [modalCoords, setModalCoords] = useState([1000,100]); */
 
+  let socket = io(endpoint, {transports: ['websocket']});
 
   useEffect(() => {
-    const sock = new SockJS(endpoint);
-    sock.onopen = function() {
-      console.log('open');
-      sock.send('test');
-    };
-
-    sock.onmessage = function(e) {
-      console.log('message', e.data);
-      setMessage(e.data);
-      sock.close();
-    };
-
-    sock.onclose = function() {
-      console.log('close');
-    };
-
-    return () => {
-        sock.close();
-    }
+    socket != null && socket.disconnect();
+    socket = io(endpoint);
+    socket.on('FromAPI', (data) => {
+      setMessage(data);
+    });
   }, [endpoint]);
+
+  let onConnected = () => {
+    console.log('Connected');
+  };
 
   useEffect(() => {
     console.log(message);
