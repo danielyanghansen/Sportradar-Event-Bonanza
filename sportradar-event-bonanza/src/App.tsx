@@ -154,7 +154,7 @@ function App() {
             </Col>
             <Col>
               <h1 style={{ fontFamily: 'monospace', color: 'white' }}>
-                Sportradar Event Bonanza InfoScreen 0.0.2
+                Sportradar Event Bonanza InfoScreen 0.0.3
               </h1>
             </Col>
           </Row>
