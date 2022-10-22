@@ -5,68 +5,19 @@ import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import MatchList, { MatchListElementProps } from './components/MatchList';
 import SockJS from 'sockjs-client';
-import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents';
+/* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
+import {
+  MatchStatus,
+  useFetchAllRecentEvents,
+} from './hooks/useFetchAllRecentEvents';
+import { useAsync } from 'react-async';
 
 function MockOnClick() {
   console.log('OnClick triggered');
 }
 
 const mockListElements: Array<MatchListElementProps> = [
-  {
-    matchName: 'Test1 Test1 Test1 Test1 Test1 Test1 Test1 Test1 ',
-    onClick: MockOnClick,
-    coordinates: [59.9139, 10.7522],
-  },
-  {
-    matchName: 'Test2',
-    onClick: MockOnClick,
-    coordinates: [41.405, 2.021],
-  },
-  {
-    matchName: 'Test3',
-    onClick: MockOnClick,
-    coordinates: [40.41, -3.662],
-  },
-  {
-    matchName: 'Test4',
-    onClick: MockOnClick,
-    coordinates: [51.43, -0.08],
-  },
-  {
-    matchName: 'Test5',
-    onClick: MockOnClick,
-    coordinates: [48.827, 2.3],
-  },
-  {
-    matchName: 'Test6',
-    onClick: MockOnClick,
-    coordinates: [51.046, 3.718],
-  },
-  {
-    matchName: 'Test7',
-    onClick: MockOnClick,
-    coordinates: [50.905, 6.848],
-  },
-  {
-    matchName: 'Test8',
-    onClick: MockOnClick,
-    coordinates: [64.9, 14.8],
-  },
-  {
-    matchName: 'Test9',
-    onClick: MockOnClick,
-    coordinates: [65.9, 15.8],
-  },
-  {
-    matchName: 'Test10',
-    onClick: MockOnClick,
-    coordinates: [66.9, 16.8],
-  },
-  {
-    matchName: 'Test11',
-    onClick: MockOnClick,
-    coordinates: [67.9, 17.8],
-  },
+
 ];
 
 function App() {
@@ -75,8 +26,131 @@ function App() {
   );
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
+  const [sportFilter, setSportFilter] = useState<number | undefined>(1);
+  const [data, setData] = useState<Object | undefined>(undefined);
 
-  //const matchList: Match[] = useReceiveEvents() as Match[];
+  const [matchStatuses, setMatchStatuses] = useState<MatchStatus[] | undefined>(
+    []
+  );
+  const [matchList, setMatchList] = useState<
+    MatchListElementProps[] | undefined
+  >(mockListElements);
+
+  const url =
+    'https://dev.fn.sportradar.com/common/en/Europe:Oslo/gismo/event_get';
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      const statusesPromise = await fetch(url)
+        .then((response: any) => response.json())
+        .then((res: any) => {
+          const resdata = res.doc[0].resdata.filter((e: any) => {
+            if (!!sportFilter) {
+              return e.match._sid === sportFilter;
+            }
+            return false;
+          });
+          const newMatchStatuses: MatchStatus[] = resdata.map(
+            (matchentry: any) => {
+              return {
+                matchid: matchentry.match._id,
+                sportID: matchentry.match._sid,
+                t1name: matchentry.match.teams.home.name,
+                t2name: matchentry.match.teams.away.name,
+                score: [
+                  matchentry.match.result.home,
+                  matchentry.match.result.away,
+                ],
+              };
+            }
+          );
+          return newMatchStatuses;
+        });
+      const statuses = await statusesPromise;
+      console.log(statuses);
+      setMatchStatuses(statuses);
+    };
+
+    fetchStatuses();
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const fetchData = async () => {
+        // get the data from the api
+        const response = await fetch(url);
+        // convert the data to json
+        const json = await response.json();
+
+        // set state with the result
+        setData(json);
+        //console.log(json);
+      };
+
+      // call the function
+      fetchData()
+        // make sure to catch any error
+        .catch(console.error);
+      console.log(data);
+    }, 10500); // Randomly click something every x millisecond
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // declare the async data fetching function
+    const fetchData = async () => {
+      // get the data from the api
+      const response = await fetch(url);
+      // convert the data to json
+      const json = await response.json();
+
+      // set state with the result
+      setData(json);
+      //console.log(json);
+    };
+
+    // call the function
+    fetchData()
+      // make sure to catch any error
+      .catch(console.error);
+    console.log(data);
+  }, []);
+
+  useEffect(() => {
+    if (!!data) {
+      const tempdata = data as any;
+      const mockStatuses: MatchListElementProps[] = tempdata.doc[0].data
+      .filter((mst: any) => {
+        if (!!sportFilter) {
+          return mst._sid === sportFilter;
+        }
+        return false;
+      })
+      .sort((mst1:any, mst2:any) => {
+        return mst1.match.timeinfo.started > mst2.match.timeinfo.started
+      })
+      .slice(0,10) //only the first 10 elements
+      
+      .map(
+        (mst: any) => {
+          return {
+            matchName: mst.match.teams.home.name + ' VS ' + mst.match.teams.away.name,
+            onClick: MockOnClick,
+            coordinates: [mst.match.result.home, mst.match.result.away],
+            matchObj: mst.match,
+          };
+        }
+      );
+      setMatchList(mockStatuses);
+    }
+  }, [data]);
+  /*   const mockStatuses: MatchListElementProps[] = matchStatuses.map((mst: MatchStatus) => {
+    return {
+      matchName: mst.t1name + " VS " + mst.t2name,
+      onClick: MockOnClick,
+      coordinates: mst.score
+    };
+  }); */
 
   useEffect(() => {
     const sock = new SockJS(endpoint);
@@ -85,7 +159,7 @@ function App() {
       sock.send('test');
     };
 
-    sock.onmessage = function (e:any) {
+    sock.onmessage = function (e: any) {
       console.log('message', e.data);
       setMessage(e.data);
       sock.close();
@@ -125,7 +199,7 @@ function App() {
             </Col>
             <Col>
               <h1 style={{ fontFamily: 'monospace', color: 'white' }}>
-                Sportradar Event Bonanza InfoScreen 0.0.1
+                Sportradar Event Bonanza InfoScreen 0.0.2
               </h1>
             </Col>
           </Row>
@@ -137,7 +211,12 @@ function App() {
           <p>
             Her kan du se en oversikt over alle arrangementer som er i gang.
           </p>
-          <MatchList matches={mockListElements} />
+          <button onClick={() => console.log(data)}>consolelog</button>
+          <MatchList
+            matches={
+              matchList
+            }
+          />
         </Col>
         <Col>
           <Map matches={mockListElements} />

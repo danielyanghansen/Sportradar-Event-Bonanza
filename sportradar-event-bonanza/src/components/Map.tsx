@@ -56,7 +56,6 @@ const Map = ({ matches }: MatchListProps) => {
 
   setInterval(() => {
     if (!!matches) {
-      console.log(matches[currentElement].coordinates);
       matches[currentElement].coordinates &&
         map.current?.flyTo({
           center: [

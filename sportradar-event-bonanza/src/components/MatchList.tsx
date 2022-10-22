@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import Image from 'react-bootstrap/Image'
 
 export type MatchListElementProps = {
   matchName: string;
   onClick: () => void;
   coordinates?: [lat: number, lng: number];
+  matchObj: any;
 };
 export type MatchListProps = {
   matches?: Array<MatchListElementProps>;
@@ -14,14 +16,23 @@ const MatchList = ({ matches }: MatchListProps) => {
   const [highlightedMatch, setHighlightedMatch] = useState<
     MatchListElementProps | undefined
   >();
+
   const MatchListElement = (match: MatchListElementProps) => {
+    const sportsType :string = match.matchObj._sid as string;
+    const matchScore: string = (!!match.matchObj) ? match.matchObj.result.home + " : " + match.matchObj.result.away : "Loading...";
+
+    /* const sportsName : string = (sportsType in SPORT_ID_DICT)
+      ? SPORT_ID_DICT[sportsType as number] as string
+      : "unknown sport" as string
+    ; */
     const selectionStatus =
-      !!highlightedMatch && match.matchName === highlightedMatch.matchName;
+      !!highlightedMatch && match.matchObj._id === highlightedMatch.matchObj._id;
     const borderColor: string = selectionStatus ? 'red' : '';
     const borderWidth = selectionStatus ? '5px' : '1px';
     return (
       <button
-        onClick={match.onClick}
+        onClick={() => {match.onClick();
+        console.log( match.matchObj )}}
         style={{
           width: '100%',
           borderColor: borderColor,
@@ -30,7 +41,13 @@ const MatchList = ({ matches }: MatchListProps) => {
           minHeight: '50px',
         }}
       >
-        Match Name: {match.matchName}
+        <Image 
+          src={"https://img.sportradar.com/ls/sports/big/" + sportsType + ".png"}
+          style={{maxHeight: "50px"}}
+          />
+        <p>{match.matchName}</p>
+        <p>{matchScore}</p>
+{/*         <p>{match.matchObj.result.home} : {match.matchObj.result.away}</p> */}
       </button>
     );
   };
@@ -59,6 +76,7 @@ const MatchList = ({ matches }: MatchListProps) => {
               setHighlightedMatch(m);
               m.onClick();
             }}
+            matchObj = {m.matchObj}
           />
         ))
       ) : (
