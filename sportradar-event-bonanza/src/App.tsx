@@ -61,31 +61,30 @@ function App() {
   const [endpoint, setEndpoint] = useState('http://localhost:8069/socket');
   const [EndpointText, setEndpointText] = useState(endpoint);
   const [message, setMessage] = useState('ws message');
-/*   const [showModal, setShowModal] = useState(false);
+  /*   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState("testing content");
   const [modalCoords, setModalCoords] = useState([1000,100]); */
 
-
   useEffect(() => {
     const sock = new SockJS(endpoint);
-    sock.onopen = function() {
+    sock.onopen = function () {
       console.log('open');
       sock.send('test');
     };
 
-    sock.onmessage = function(e) {
+    sock.onmessage = function (e) {
       console.log('message', e.data);
       setMessage(e.data);
       sock.close();
     };
 
-    sock.onclose = function() {
+    sock.onclose = function () {
       console.log('close');
     };
 
     return () => {
-        sock.close();
-    }
+      sock.close();
+    };
   }, [endpoint]);
 
   useEffect(() => {
@@ -100,14 +99,13 @@ function App() {
         value={EndpointText}
         onChange={(e) => setEndpointText(e.target.value)}
         onKeyUp={(e) => {
-          if (e.keyCode == 0x0d) setEndpoint(EndpointText);
+          if (e.keyCode === 0x0d) setEndpoint(EndpointText);
         }}
-       
       />
       <button onClick={() => setEndpoint(EndpointText)}>Update</button>
       <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
         <Container>
-          <p  style={{ color: 'white' }}>{endpoint}</p>
+          <p style={{ color: 'white' }}>{endpoint}</p>
           <Row>
             <Col md={2}>
               <img src={logo1024} className="App-logo" alt="logo" height={90} />
@@ -132,7 +130,7 @@ function App() {
           <Map />
         </Col>
       </Row>
-{/*         <SimpleModal
+      {/*         <SimpleModal
           xoffset = {modalCoords[0]}
           yoffset = {modalCoords[1]}
           showModal = {true}
