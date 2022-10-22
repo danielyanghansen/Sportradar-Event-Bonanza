@@ -4,13 +4,18 @@ import { render } from 'react-dom';
 import Tooltip from './Tooltip.jsx';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
-import { MatchListProps } from './MatchList.js';
+import { Match } from '../types';
+import { getMatchName } from '../utils/matchUtils';
+
+interface Props {
+  matches: Array<Match>;
+}
 
 mapboxgl.accessToken =
   'pk.eyJ1Ijoib2xsZmthaWgiLCJhIjoiY2w5aWp1MW9vMDhqNjN1dDVyejlwODVwMSJ9.XA-kvHJb1k-Lkwt53KczzQ';
 
 const flyBetweenPlacesInterval = 10000;
-const Map = ({ matches }: MatchListProps) => {
+const Map = ({ matches }: Props) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapboxMap>();
   const startLng = 63.4329; //10.75;
@@ -71,7 +76,7 @@ const Map = ({ matches }: MatchListProps) => {
           easing: (t) => t,
         });
       console.log(
-        matches[currentElement].matchName,
+        getMatchName(matches[currentElement]),
         matches[currentElement].coordinates!![0]
       );
       addPointsToMap(
