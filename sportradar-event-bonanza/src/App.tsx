@@ -5,6 +5,7 @@ import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import MatchList, { MatchListElementProps } from './components/MatchList';
 import SockJS from 'sockjs-client';
+import {Stomp} from "@stomp/stompjs";
 
 function MockOnClick() {
   console.log('OnClick triggered');
@@ -68,23 +69,18 @@ function App() {
 
   useEffect(() => {
     const sock = new SockJS(endpoint);
-    sock.onopen = function() {
-      console.log('open');
-      sock.send('test');
-    };
+    const stompClient = Stomp.over(sock);
 
-    sock.onmessage = function(e) {
-      console.log('message', e.data);
-      setMessage(e.data);
-      sock.close();
-    };
-
-    sock.onclose = function() {
-      console.log('close');
-    };
+    stompClient.connect({}, () => {
+      console.log('Connected:');
+      stompClient.subscribe('/topic/messages',  (message) =>{
+        console.log(JSON.parse(message.body));
+      });
+      stompClient.send('/app/socket', {}, JSON.stringify({ 'name': 'test' }));
+    });
 
     return () => {
-        sock.close();
+        stompClient.disconnect();
     }
   }, [endpoint]);
 
