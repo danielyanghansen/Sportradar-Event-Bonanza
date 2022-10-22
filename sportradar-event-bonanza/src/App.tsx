@@ -16,8 +16,7 @@ function MockOnClick() {
   console.log('OnClick triggered');
 }
 
-const mockListElements: Array<MatchListElementProps> = [
-];
+const mockListElements: Array<MatchListElementProps> = [];
 
 function App() {
   const [endpoint, setEndpoint] = useState(
@@ -119,27 +118,26 @@ function App() {
     if (!!data) {
       const tempdata = data as any;
       const mockStatuses: MatchListElementProps[] = tempdata.doc[0].data
-      .filter((mst: any) => {
-        if (!!sportFilter) {
-          return mst._sid === sportFilter;
-        }
-        return false;
-      })
-      .sort((mst1:any, mst2:any) => {
-        return mst1.match.timeinfo.started > mst2.match.timeinfo.started
-      })
-      .slice(0,10) //only the first 10 elements
-      
-      .map(
-        (mst: any) => {
+        .filter((mst: any) => {
+          if (!!sportFilter) {
+            return mst._sid === sportFilter;
+          }
+          return false;
+        })
+        .sort((mst1: any, mst2: any) => {
+          return mst1.match.timeinfo.started > mst2.match.timeinfo.started;
+        })
+        .slice(0, 10) //only the first 10 elements
+
+        .map((mst: any) => {
           return {
-            matchName: mst.match.teams.home.name + ' VS ' + mst.match.teams.away.name,
+            matchName:
+              mst.match.teams.home.name + ' VS ' + mst.match.teams.away.name,
             onClick: MockOnClick,
             coordinates: [mst.match.result.home, mst.match.result.away],
             matchObj: mst.match,
           };
-        }
-      );
+        });
       setMatchList(mockStatuses);
     }
   }, [data]);
@@ -211,11 +209,7 @@ function App() {
             Her kan du se en oversikt over alle arrangementer som er i gang.
           </p>
           <button onClick={() => console.log(data)}>consolelog</button>
-          <MatchList
-            matches={
-              matchList
-            }
-          />
+          <MatchList matches={matchList} />
         </Col>
         <Col>
           <Map matches={mockListElements} />
