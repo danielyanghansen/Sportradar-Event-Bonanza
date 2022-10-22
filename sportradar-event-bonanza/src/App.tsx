@@ -17,12 +17,6 @@ function MockOnClick() {
 }
 
 const mockListElements: Array<MatchListElementProps> = [
-  {
-    matchName: 'Test1 Test1 Test1 Test1 Test1 Test1 Test1 Test1 ',
-    onClick: MockOnClick,
-    coordinates: [59.9139, 10.7522],
-    matchObj: {undefined}
-  },
 ];
 
 function App() {
