@@ -5,16 +5,24 @@ import com.sportradar.sdk.feed.common.entities.EventIdentifier;
 import com.sportradar.sdk.feed.livescout.interfaces.LiveScoutFeed;
 import com.sportradar.sdk.feed.livescout.interfaces.LiveScoutFeedListener;
 import com.sportradar.sdk.feed.sdk.Sdk;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Main {
+
+    private static ServerController controller;
+
+    public Main(ServerController controller) {
+        this.controller = controller;
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -23,7 +31,7 @@ public class Main {
      *
      * @param args provided command line arguments
      */
-    public static void main(String[] args) throws SdkException {
+    public static void main() throws SdkException {
         logger.info("Current JVM version - " + System.getProperty("java.version"));
 
         final Sdk sdk = Sdk.getInstance();
@@ -36,15 +44,15 @@ public class Main {
         }
 
         logger.info("The sdk is running. Hit any key to exit");
-
+        
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             boolean close = false;
-            while(!close && liveScoutFeed != null) {
+            while (!close && liveScoutFeed != null) {
                 String input = reader.readLine();
-                if("close".equals(input)) {
+                if ("close".equals(input)) {
                     close = true;
-                } else if("matchlist".equals(input)) {
+                } else if ("matchlist".equals(input)) {
                     logger.info("Sending matchlist request");
 
                     Duration duration = Duration.between(Instant.parse("2022-05-01T00:00:00.00Z"),
@@ -69,7 +77,7 @@ public class Main {
                         -1 * ((int) duration.toHours() - 72),
                         true, List.of(1L), null);
 
-                } else if ("replay".equals(input)) {
+                } else {
                     /**
                      * you can replay a match with specific delay and start message
                      * in the following example:

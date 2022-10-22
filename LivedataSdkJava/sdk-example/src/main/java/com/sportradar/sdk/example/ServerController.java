@@ -14,10 +14,21 @@ import java.text.SimpleDateFormat;
 @RestController
 @RequestMapping
 public class ServerController {
-    @GetMapping(path = "/test")
-    public String test() {
-        return "test";
-    }
+//    @GetMapping(path = "/test")
+//    public String test() {
+////        try {
+////            Main main = new Main(this);
+////            main.main();
+////        } catch (Exception e) {
+////            e.printStackTrace();
+////        }
+//        try {
+//            send("testing");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "testing";
+//    }
 
     @MessageMapping("/socket")
     @SendTo("/topic/messages")
