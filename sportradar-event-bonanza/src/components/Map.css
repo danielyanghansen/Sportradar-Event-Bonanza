@@ -1,6 +1,7 @@
 .map-container {
-  height: 87.5vh;
+  height: 100%;
 }
+
 .marker {
   background-image: url('../logo1024.png');
   background-size: cover;

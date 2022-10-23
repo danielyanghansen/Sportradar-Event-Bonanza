@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import logo1024 from './logo1024.png';
+import img from './img.png';
 import './App.css';
 import Map from './components/Map';
-import { Col, Row, Container } from 'react-bootstrap';
 import MatchList from './components/MatchList';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
 import {
@@ -111,37 +110,31 @@ function App() {
 
   return (
     <div className="App" style={{ alignContent: 'center' }}>
-      {/* text field and button to update endpoint */}
-      <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
-        <Container>
-          <Row>
-            <Col md={2}>
-              <img src={logo1024} className="App-logo" alt="logo" height={90} />
-            </Col>
-            <Col>
-              <h1 style={{ fontFamily: 'monospace', color: 'white' }}>
-                Sportradar Event Bonanza InfoScreen 0.0.3
-              </h1>
-            </Col>
-          </Row>
-        </Container>
-      </a>
+      <div className="map_layer">
+        <Map matches={matches} />
+      </div>
+      <div className="overlay_layer">
+        <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
+          <h1
+            style={{
+              fontSize: '3em',
+              fontFamily: 'monospace',
+              color: 'white',
+            }}
+          >
+            <img src={img} alt="logo" height={60} /> Event Bonanza InfoScreen
+            0.0.3
+          </h1>
+        </a>
 
-      <Row sm={12}>
-        <Col sm={3}>
-          <p>
-            Her kan du se en oversikt over alle arrangementer som er i gang.
-          </p>
-          <button onClick={() => console.log(data)}>consolelog</button>
+        <div className="match_list">
           <MatchList matches={eventGetMatches} />
-        </Col>
-        <Col>
-          <Map matches={matches} />
-        </Col>
-      </Row>
-      <Row sm={12}>
-        <Textbar />
-      </Row>
+        </div>
+
+        <div className="text_bar">
+          <Textbar />
+        </div>
+      </div>
     </div>
   );
 }

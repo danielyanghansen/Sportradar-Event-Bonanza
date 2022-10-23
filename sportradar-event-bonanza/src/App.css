@@ -4,12 +4,6 @@
   color: #faf6f6;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .body {
   background-color: #282c34;
   display: flex;
@@ -24,11 +18,35 @@
   font-size: calc(10px + 2vmin);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.map_layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 10em;
+  right: 0;
+}
+
+.overlay_layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.match_list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 30em;
+}
+
+.text_bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10em;
+    background-color: #191a1a;
 }
