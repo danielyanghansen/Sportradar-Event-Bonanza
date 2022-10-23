@@ -27,6 +27,7 @@
 }
 
 .overlay_layer {
+  pointer-events: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -43,6 +44,7 @@
 }
 
 .match_list {
+  pointer-events: all;
   position: absolute;
   top: 0;
   left: 0;
