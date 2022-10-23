@@ -3,11 +3,13 @@ import logo1024 from './logo1024.png';
 import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image';
+
 import MatchList from './components/MatchList';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
 import { EventGetResponse, EventGetMatch, Sport, Match } from './types';
 import useSWR from 'swr';
-
+import SportSelectDropdown from './components/SportSelectDropdown';
 function mockOnClick() {
   console.log('OnClick triggered');
 }
@@ -26,7 +28,7 @@ function App() {
     { refreshInterval: 10000 }
   );
 
-  const [matches, setMatches] = useState<EventGetMatch[]>([]);
+  const [matches, setMatches] = useState<EventGetMatch[] | Match[]>([]);
 
   useEffect(() => {
     if (!data) return;
@@ -80,7 +82,29 @@ function App() {
           <p>
             Her kan du se en oversikt over alle arrangementer som er i gang.
           </p>
-          <button onClick={() => console.log(data)}>consolelog</button>
+          <Row>
+            <Col>
+              <SportSelectDropdown
+                sportIdList={[1, 2, 3, 4, 5, 6, 7]}
+                onClick={(filterId: number) => {
+                  setSportFilter(filterId);
+                  setMatches(matches.filter((match) => {
+                    return match._sid === filterId;
+                  }))
+                }}
+              />
+            </Col>
+            <Col style={{ width: '30%' }}>
+              <Image
+                src={
+                  'https://img.sportradar.com/ls/sports/big/' +
+                  (!!sportFilter ? sportFilter : 1).toString() +
+                  '.png'
+                }
+                style={{ maxHeight: '40px' }}
+              />
+            </Col>
+          </Row>
           <MatchList matches={matches} />
         </Col>
         <Col>
