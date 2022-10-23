@@ -65,3 +65,22 @@ body {
   height: 10em;
   background-color: #191a1a;
 }
+
+.event_location {
+  position: absolute;
+  bottom: 10rem;
+  left: 0;
+  right: 0;
+}
+
+.match_info {
+    position: absolute;
+    top: 5rem;
+    left: 0;
+    right: 0;
+}
+
+.match_info>div {
+  width: 25rem;
+  margin: 0 auto;
+}

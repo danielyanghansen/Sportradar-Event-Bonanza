@@ -23,6 +23,7 @@ const useMatches = ({ sportFilter }: Options): Match[] => {
         matches.push({
           ...eventGetMatch,
           coordinates: coords.split(',').map(Number) as [number, number],
+          location: matchCoordinates[eventGetMatch._id]?.doc[0].data.location,
         });
       }
     }

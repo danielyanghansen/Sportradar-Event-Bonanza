@@ -10,6 +10,7 @@ import { Sport } from './types';
 import SportSelectDropdown from './components/SportSelectDropdown';
 import Textbar from './components/Textbar';
 import useMatches from './hooks/useMatches';
+import MatchListElement from './components/MatchListElement';
 
 export const flyBetweenPlacesInterval = 10000;
 
@@ -70,6 +71,22 @@ function App() {
             selectedMatch={selectedMatch}
             onSelect={(index: number) => setSelectedMatchIndex(index)}
           />
+        </div>
+        <div className="event_location">
+          <p style={{ fontSize: '2em' }}>
+            {selectedMatch?.location ?? 'Unknown location'}
+          </p>
+        </div>
+        <div className="match_info">
+          <div>
+            {selectedMatch && (
+              <MatchListElement
+                match={selectedMatch}
+                isHighlighted={false}
+                onClick={() => {}}
+              />
+            )}
+          </div>
         </div>
         <div className="text_bar">
           <Textbar matches={matches} />

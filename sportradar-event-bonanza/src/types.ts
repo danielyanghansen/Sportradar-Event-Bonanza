@@ -35,6 +35,7 @@ export interface EventGetMatch {
 
 export interface Match extends EventGetMatch {
   coordinates: [lat: number, lng: number];
+  location?: string;
 }
 
 interface Team {
