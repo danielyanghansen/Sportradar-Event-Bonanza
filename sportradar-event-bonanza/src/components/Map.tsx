@@ -23,7 +23,9 @@ const Map = ({ matches }: Props) => {
   const zoom = 5;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
   let currentElement = 0;
-  let dooID: NodeJS.Timer;
+  let panInterval: NodeJS.Timer;
+  let pulseInterval: NodeJS.Timer;
+  let test = 9;
 
   const createMap = () => {
     map.current = mapContainer.current
@@ -45,22 +47,8 @@ const Map = ({ matches }: Props) => {
     createMap();
     createToolTipOnClick();
     setTimeout(() => {
-      addMapLayer(startLng, startLat, 50);
-    }, 1000);
-    /*addPointsToMap(10.7565162, 59.911028, '', 13);
-    let stop: NodeJS.Timer;
-    setTimeout(() => {
-      map.current?.once('idle', () => {
-        map.current?.resize();
-        map.current?.zoomTo(3);
-        stop = setInterval(() => {
-          map.current?.panBy([0.2, 0], { duration: 1 });
-        }, 1);
-      });
-    }, 5000);
-    setTimeout(() => {
-      clearInterval(stop);
-    }, 20000);*/
+      addMapLayer(startLng, startLat, 5);
+    }, 1000);     
   }, []);
 
   useEffect(() => {
@@ -135,22 +123,9 @@ const Map = ({ matches }: Props) => {
             },
           ],
         },
-      });
-
-      const el = document.createElement('div');
-      el.className = 'pulse';
-      el.style.width = size + 'px';
-      el.style.height = size + 'px';
-      el.style.borderRadius = '50%';
-      el.style.backgroundColor = 'rgba(232, 0, 0, 0.75)';
-
-      new mapboxgl.Marker(el)
-        .setLngLat([lng, lat])
-        .addTo(map.current!!);
-
-      el.style.animation = 'pulse 1s infinite';
+      });      
     
-    /*map.current?.addLayer({
+    map.current?.addLayer({
       id: 'eventsMapLayer',
       type: 'circle',
       source: 'eventsMapLayer',
@@ -160,19 +135,18 @@ const Map = ({ matches }: Props) => {
         'circle-stroke-color': '#222222',
         'circle-stroke-width': 2,
       },
-    });*/
-    map.current?.setTerrain({
-      source: 'mapbox-dem',
-      exaggeration: [
-        'interpolate',
-        ['exponential', 0.5],
-        ['zoom'],
-        0,
-        0.2,
-        7,
-        1,
-      ],
-    });
+    })
+
+    pulseInterval = setInterval(() => {
+      test = (test + 1) % 20;
+      map.current?.setPaintProperty(
+        'eventsMapLayer',
+        'circle-radius',
+        ['interpolate', ['linear'], ['var', 'test'] , 8, 20]
+      );
+    }, 1000);
+
+    
   };
 
   const addPointsToMap = (

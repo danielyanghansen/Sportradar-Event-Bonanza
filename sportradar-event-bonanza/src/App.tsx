@@ -13,6 +13,7 @@ import {
   Match,
 } from './types';
 import useSWR from 'swr';
+import Textbar from './components/Textbar';
 
 function mockOnClick() {
   console.log('OnClick triggered');
@@ -137,6 +138,9 @@ function App() {
         <Col>
           <Map matches={matches} />
         </Col>
+      </Row>
+      <Row sm={12}>
+        <Textbar />
       </Row>
     </div>
   );
