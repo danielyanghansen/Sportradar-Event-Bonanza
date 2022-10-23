@@ -5,7 +5,13 @@ import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
 import MatchList from './components/MatchList';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
-import { EventGetResponse, EventGetMatch, Sport, Match } from './types';
+import {
+  EventGetResponse,
+  EventGetMatch,
+  Sport,
+  MatchCoordinatesResponse,
+  Match,
+} from './types';
 import useSWR from 'swr';
 
 function mockOnClick() {
@@ -20,13 +26,19 @@ function App() {
   const url =
     'https://dev.fn.sportradar.com/common/en/Europe:Oslo/gismo/event_get';
 
+  const coordsUrl = (matchId: number | string) =>
+    `https://dev.fn.sportradar.com/common/en/Europe:Berlin/gismo/match_coordinates/${matchId}`;
+
   const { data, error } = useSWR<EventGetResponse>(
     url,
     (url) => fetch(url).then((r) => r.json()),
     { refreshInterval: 10000 }
   );
 
-  const [matches, setMatches] = useState<EventGetMatch[]>([]);
+  const [eventGetMatches, setEventGetMatches] = useState<EventGetMatch[]>([]);
+  const [matchCoordinates, setMatchCoordinates] = useState<
+    Record<number, MatchCoordinatesResponse>
+  >([]);
 
   useEffect(() => {
     if (!data) return;
@@ -40,9 +52,9 @@ function App() {
       })
       .map((event) => event.match);
 
-    fetched = [...fetched, ...matches];
+    fetched = [...fetched, ...eventGetMatches];
 
-    setMatches(
+    setEventGetMatches(
       fetched
         .filter(
           (match, index) => fetched.find((m) => m._id === match._id) === match
@@ -56,6 +68,45 @@ function App() {
     );
     //only the first 10 elements
   }, [data, sportFilter]);
+
+  useEffect(() => {
+    const matchCoordinatePromises: Promise<
+      [number, MatchCoordinatesResponse]
+    >[] = eventGetMatches.map((match) => {
+      return !!matchCoordinates[match._id]
+        ? new Promise((res) => res([match._id, matchCoordinates[match._id]]))
+        : fetch(coordsUrl(match._id))
+            .then((r) => r.json())
+            .then((r) => [match._id, r]);
+    });
+
+    Promise.all(matchCoordinatePromises).then((values) => {
+      setMatchCoordinates(
+        values.reduce(
+          (acc, [id, match]) => ({ ...acc, [id]: match }),
+          matchCoordinates
+        )
+      );
+    });
+  }, [eventGetMatches]);
+
+  const matches = useMemo(() => {
+    const matches: Match[] = [];
+
+    for (const eventGetMatch of eventGetMatches) {
+      const coords =
+        matchCoordinates[eventGetMatch._id]?.doc[0].data.coordinates;
+      if (coords) {
+        matches.push({
+          ...eventGetMatch,
+          coordinates: coords.split(',').map(Number) as [number, number],
+          onClick: mockOnClick,
+        });
+      }
+    }
+
+    return matches;
+  }, [eventGetMatches, matchCoordinates]);
 
   return (
     <div className="App" style={{ alignContent: 'center' }}>
@@ -81,16 +132,10 @@ function App() {
             Her kan du se en oversikt over alle arrangementer som er i gang.
           </p>
           <button onClick={() => console.log(data)}>consolelog</button>
-          <MatchList matches={matches} />
+          <MatchList matches={eventGetMatches} />
         </Col>
         <Col>
-          <Map
-            matches={matches.map((match) => ({
-              ...match,
-              coordinates: [63.4326808, 10.4076614],
-              onClick: mockOnClick,
-            }))}
-          />
+          <Map matches={matches} />
         </Col>
       </Row>
     </div>
