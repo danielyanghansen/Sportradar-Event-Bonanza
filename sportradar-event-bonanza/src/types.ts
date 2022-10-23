@@ -47,3 +47,18 @@ interface Team {
 export enum Sport {
   Football = 1,
 }
+
+export interface MatchCoordinatesResponse {
+  queryUrl: string;
+  doc: [
+    {
+      event: 'match_coordinates';
+      _dob: number;
+      _maxage: number;
+      data: {
+        coordinates?: string;
+        location?: string;
+      };
+    }
+  ];
+}

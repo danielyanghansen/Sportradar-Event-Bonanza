@@ -63,37 +63,36 @@ const Map = ({ matches }: Props) => {
     }, 20000);*/
   }, []);
 
-  setInterval(() => {
-    if (dooID) clearInterval(dooID);
-    if (!!matches) {
-      matches[currentElement].coordinates &&
-        map.current?.flyTo({
-          center: [
-            matches[currentElement].coordinates!![1],
-            matches[currentElement].coordinates!![0],
-          ],
-          zoom: 5,
-          speed: 0.5,
-          curve: 1,
-          easing: (t) => t,
-        });
-      console.log(
-        getMatchName(matches[currentElement]),
-        matches[currentElement].coordinates!![0],
-        matches[currentElement].coordinates!![1]
-      );
-      addPointsToMap(
-        matches[currentElement].coordinates!![0],
-        matches[currentElement].coordinates!![1],
-        '',
-        8
-      );
-      currentElement = (currentElement + 1) % matches.length;
-    }
-    dooID = setInterval(() => {
-      map.current?.panBy([0.2, 0], { duration: 0.5 });
-      }, 1);
-  }, flyBetweenPlacesInterval);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!!matches) {
+        matches[currentElement].coordinates &&
+          map.current?.flyTo({
+            center: [
+              matches[currentElement].coordinates[1],
+              matches[currentElement].coordinates[0],
+            ],
+            zoom: 5,
+            speed: 0.5,
+            curve: 1,
+            easing: (t) => t,
+          });
+        console.log(
+          getMatchName(matches[currentElement]),
+          matches[currentElement].coordinates[0],
+          matches[currentElement].coordinates[1]
+        );
+        addPointsToMap(
+          matches[currentElement].coordinates[0],
+          matches[currentElement].coordinates[1],
+          '',
+          8
+        );
+        currentElement = (currentElement + 1) % matches.length;
+      }
+    }, flyBetweenPlacesInterval);
+    return () => clearInterval(interval);
+  });
 
   const createToolTipOnClick = () => {
     map.current?.on('click', (e) => {
