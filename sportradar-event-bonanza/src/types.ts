@@ -34,7 +34,6 @@ export interface EventGetMatch {
 }
 
 export interface Match extends EventGetMatch {
-  onClick: () => void;
   coordinates: [lat: number, lng: number];
 }
 
