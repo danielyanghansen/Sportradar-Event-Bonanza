@@ -11,6 +11,8 @@ import SportSelectDropdown from './components/SportSelectDropdown';
 import Textbar from './components/Textbar';
 import useMatches from './hooks/useMatches';
 
+export const flyBetweenPlacesInterval = 10000;
+
 function App() {
   const [sportFilter, setSportFilter] = useState<number | undefined>(
     Sport.Football
@@ -18,10 +20,14 @@ function App() {
 
   const matches = useMatches({ sportFilter });
 
+  const [selectedMatchIndex, setSelectedMatchIndex] = useState<number>(0);
+
+  const selectedMatch = matches[selectedMatchIndex];
+
   return (
     <div className="App" style={{ alignContent: 'center' }}>
       <div className="map_layer">
-        <Map matches={matches} />
+        <Map matches={matches} selectedMatch={selectedMatch} />
       </div>
       <div className="overlay_layer">
         <div className="app_title">
@@ -59,7 +65,11 @@ function App() {
             }
             style={{ maxHeight: '40px' }}
           />
-          <MatchList matches={matches} />
+          <MatchList
+            matches={matches}
+            selectedMatch={selectedMatch}
+            onSelect={(index: number) => setSelectedMatchIndex(index)}
+          />
         </div>
         <div className="text_bar">
           <Textbar matches={matches} />

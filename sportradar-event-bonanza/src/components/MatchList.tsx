@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { EventGetMatch } from '../types';
+import React, { useEffect } from 'react';
+import { Match } from '../types';
 import MatchListElement from './MatchListElement';
+import { flyBetweenPlacesInterval } from '../App';
 
 export type MatchListProps = {
-  matches: Array<EventGetMatch>;
+  matches: Array<Match>;
+  selectedMatch: Match | undefined;
+  onSelect: (index: number) => void;
 };
 
-const MatchList = ({ matches }: MatchListProps) => {
-  const autoHighlightDuration = 5000;
-  const [highlightedMatchId, setHighlightedMatchId] = useState<number>();
-
+const MatchList = ({ matches, selectedMatch, onSelect }: MatchListProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (matches.length) {
-        const item = matches[Math.floor(Math.random() * matches.length)];
-        setHighlightedMatchId(item._id);
+        onSelect(Math.floor(Math.random() * matches.length));
       }
-    }, autoHighlightDuration); // Randomly click something every x millisecond
+    }, flyBetweenPlacesInterval); // Randomly click something every x millisecond
     return () => clearInterval(interval);
-  }, [autoHighlightDuration, matches]);
+  }, [matches, onSelect]);
 
   return (
     <div style={{ overflowY: 'hidden', padding: '20px' }}>
@@ -27,9 +26,9 @@ const MatchList = ({ matches }: MatchListProps) => {
           <MatchListElement
             key={match._id}
             match={match}
-            isHighlighted={match._id === highlightedMatchId}
+            isHighlighted={match === selectedMatch}
             onClick={() => {
-              setHighlightedMatchId(match._id);
+              onSelect(matches.indexOf(match));
             }}
           />
         ))

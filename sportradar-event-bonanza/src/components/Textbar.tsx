@@ -1,6 +1,6 @@
 import React from 'react';
 import './Textbar.css';
-import { EventGetMatch } from '../types';
+import { EventGetMatch, Match } from '../types';
 import {
   getMatchScore,
   getMatchScores,
@@ -8,7 +8,7 @@ import {
 } from '../utils/matchUtils';
 
 interface Props {
-  matches: Array<EventGetMatch>;
+  matches: Array<Match>;
 }
 
 let displayString: string = '';

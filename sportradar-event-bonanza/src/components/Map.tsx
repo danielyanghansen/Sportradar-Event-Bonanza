@@ -6,24 +6,23 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
 import { Match } from '../types';
 import { getMatchName } from '../utils/matchUtils';
-import { features } from 'process';
+import { flyBetweenPlacesInterval } from '../App';
 
 interface Props {
   matches: Array<Match>;
+  selectedMatch: Match;
 }
 
 mapboxgl.accessToken =
   'pk.eyJ1Ijoib2xsZmthaWgiLCJhIjoiY2w5aWp1MW9vMDhqNjN1dDVyejlwODVwMSJ9.XA-kvHJb1k-Lkwt53KczzQ';
 
-const flyBetweenPlacesInterval = 10000;
-const Map = ({ matches }: Props) => {
+const Map = ({ matches, selectedMatch }: Props) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapboxMap>();
   const startLng = 63.4329; //10.75;
   const startLat = 10.405; //59.92;
   const zoom = 5;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
-  let currentElement = 0;
   let panInterval: NodeJS.Timer;
   let pulseInterval: NodeJS.Timer;
   let test = 9;
@@ -66,72 +65,65 @@ const Map = ({ matches }: Props) => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (!!matches) {
-        addFirstPointToMap(
-          matches[currentElement].coordinates[1],
-          matches[currentElement].coordinates[0]
-        );
-        map.current?.flyTo({
-          center: [
-            matches[currentElement].coordinates[1],
-            matches[currentElement].coordinates[0],
-          ],
-          zoom: 5,
-          bearing: 0,
-          pitch: 0,
-          curve: 1,
-        });
-        currentElement = (currentElement + 1) % matches.length;
-        setMapData({
-          ...mapData,
-          features: [
-            ...mapData.features,
-            {
-              type: 'Feature',
-              geometry: {
-                ...mapData.features.geometry,
-                type: 'Point',
-                coordinates: [
-                  matches[currentElement].coordinates[1],
-                  matches[currentElement].coordinates[0],
-                ],
-              },
-              properties: {},
-            },
-          ],
-        });
-        addPointsToMap();
-        console.log(mapData);
+    if (selectedMatch) {
+      addFirstPointToMap(
+        selectedMatch.coordinates[1],
+        selectedMatch.coordinates[0]
+      );
+      map.current?.flyTo({
+        center: [selectedMatch.coordinates[1], selectedMatch.coordinates[0]],
+        zoom: 5,
+        bearing: 0,
+        pitch: 0,
+        curve: 1,
+      });
 
-        setTimeout(() => {
-          matches[currentElement].coordinates &&
-            map.current?.flyTo({
-              center: [
-                matches[currentElement].coordinates[1],
-                matches[currentElement].coordinates[0],
+      setMapData({
+        ...mapData,
+        features: [
+          ...mapData.features,
+          {
+            type: 'Feature',
+            geometry: {
+              ...mapData.features.geometry,
+              type: 'Point',
+              coordinates: [
+                selectedMatch.coordinates[1],
+                selectedMatch.coordinates[0],
               ],
-              zoom: 12.5,
-              bearing: 130,
-              pitch: 75,
-              speed: 2,
-              curve: 1,
-              easing: (t) => t,
-            });
-          console.log(
-            getMatchName(matches[currentElement]),
-            matches[currentElement].coordinates[0],
-            matches[currentElement].coordinates[1]
-          );
-          addFirstPointToMap(
-            matches[currentElement].coordinates[1],
-            matches[currentElement].coordinates[0]
-          );
-        }, flyBetweenPlacesInterval / 2);
-      }
-    }, flyBetweenPlacesInterval);
-    return () => clearInterval(interval);
-  });
+            },
+            properties: {},
+          },
+        ],
+      });
+      addPointsToMap();
+
+      setTimeout(() => {
+        selectedMatch.coordinates &&
+          map.current?.flyTo({
+            center: [
+              selectedMatch.coordinates[1],
+              selectedMatch.coordinates[0],
+            ],
+            zoom: 12.5,
+            bearing: 130,
+            pitch: 75,
+            speed: 2,
+            curve: 1,
+            easing: (t) => t,
+          });
+        console.log(
+          getMatchName(selectedMatch),
+          selectedMatch.coordinates[0],
+          selectedMatch.coordinates[1]
+        );
+        addFirstPointToMap(
+          selectedMatch.coordinates[1],
+          selectedMatch.coordinates[0]
+        );
+      }, flyBetweenPlacesInterval / 2);
+    }
+  }, [selectedMatch]);
 
   const createToolTipOnClick = () => {
     map.current?.on('click', (e) => {
