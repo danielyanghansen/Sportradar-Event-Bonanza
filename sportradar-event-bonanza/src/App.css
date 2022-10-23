@@ -52,10 +52,10 @@
 }
 
 .text_bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 10em;
-    background-color: #191a1a;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10em;
+  background-color: #191a1a;
 }

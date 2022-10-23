@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import img from './img.png';
 import './App.css';
 import Map from './components/Map';
+import { Col, Row, Container } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image';
+
 import MatchList from './components/MatchList';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
 import {
@@ -12,6 +15,7 @@ import {
   Match,
 } from './types';
 import useSWR from 'swr';
+import SportSelectDropdown from './components/SportSelectDropdown';
 import Textbar from './components/Textbar';
 
 function mockOnClick() {
@@ -44,18 +48,18 @@ function App() {
     if (!data) return;
 
     let fetched: EventGetMatch[] = data.doc[0].data
-      .filter((event) => {
-        if (!!sportFilter) {
-          return event._sid === sportFilter;
-        }
-        return false;
-      })
       .map((event) => event.match);
 
     fetched = [...fetched, ...eventGetMatches];
 
     setEventGetMatches(
       fetched
+        .filter((match) => {
+          if (!!sportFilter) {
+            return match._sid === sportFilter;
+          }
+          return false;
+        })
         .filter(
           (match, index) => fetched.find((m) => m._id === match._id) === match
         )
@@ -135,9 +139,22 @@ function App() {
           </a>
         </div>
         <div className="match_list">
+        <SportSelectDropdown
+                  sportIdList={[1, 2, 3, 4, 5, 6, 7]}
+                  onClick={(filterId: number) => {
+                    setSportFilter(filterId);
+                  }}
+                />
+                <Image
+                  src={
+                    'https://img.sportradar.com/ls/sports/big/' +
+                    (!!sportFilter ? sportFilter : 1).toString() +
+                    '.png'
+                  }
+                  style={{ maxHeight: '40px' }}
+                />
           <MatchList matches={eventGetMatches} />
         </div>
-
         <div className="text_bar">
           <Textbar />
         </div>
