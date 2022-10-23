@@ -62,7 +62,7 @@ function App() {
           <MatchList matches={matches} />
         </div>
         <div className="text_bar">
-          <Textbar />
+          <Textbar matches={matches} />
         </div>
       </div>
     </div>

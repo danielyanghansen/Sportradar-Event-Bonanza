@@ -13,6 +13,10 @@
   color: white;
 }
 
+body {
+  background-color: #191a1a;
+}
+
 .App-link {
   color: #61dafb;
   font-size: calc(10px + 2vmin);

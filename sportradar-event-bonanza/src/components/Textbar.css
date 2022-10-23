@@ -1,6 +1,6 @@
 @keyframes textbar {
   0% {
-    transform: translateX(100%);
+    transform: translateX(100vw);
   }
   100% {
     transform: translateX(-100%);
@@ -9,8 +9,8 @@
 
 .txtbar {
   position: absolute;
-  animation: textbar 5s linear infinite;
+  animation: textbar 15s linear infinite;
   color: white;
-  font-size: 100px;
-  background-color: green;
+  font-size: 30px;
+  background-color: #191a1a;
 }
