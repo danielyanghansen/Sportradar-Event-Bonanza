@@ -48,7 +48,7 @@ const Map = ({ matches }: Props) => {
     createToolTipOnClick();
     setTimeout(() => {
       addMapLayer(startLng, startLat, 5);
-    }, 1000);     
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -107,8 +107,8 @@ const Map = ({ matches }: Props) => {
   };
 
   const addMapLayer = (lat: number, lng: number, size: number) => {
-    map.current &&
-      map.current?.addSource('eventsMapLayer', {
+    if (map.current) {
+      map.current.addSource('eventsMapLayer', {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
@@ -123,30 +123,40 @@ const Map = ({ matches }: Props) => {
             },
           ],
         },
-      });      
-    
-    map.current?.addLayer({
-      id: 'eventsMapLayer',
-      type: 'circle',
-      source: 'eventsMapLayer',
-      paint: {
-        'circle-color': '#fd0000',
-        'circle-radius': size,
-        'circle-stroke-color': '#222222',
-        'circle-stroke-width': 2,
-      },
-    })
+      });
+
+      map.current.addLayer({
+        id: 'eventsMapLayer',
+        type: 'circle',
+        source: 'eventsMapLayer',
+        paint: {
+          'circle-color': '#fd0000',
+          'circle-radius': size,
+          'circle-stroke-color': '#222222',
+          'circle-stroke-width': 2,
+        },
+      });
+
+      map.current.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14,
+      });
+      // add the DEM source as a terrain layer with exaggerated height
+      map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 3 });
+    }
 
     pulseInterval = setInterval(() => {
       test = (test + 1) % 20;
-      map.current?.setPaintProperty(
-        'eventsMapLayer',
-        'circle-radius',
-        ['interpolate', ['linear'], ['var', 'test'] , 8, 20]
-      );
+      map.current?.setPaintProperty('eventsMapLayer', 'circle-radius', [
+        'interpolate',
+        ['linear'],
+        ['var', 'test'],
+        8,
+        20,
+      ]);
     }, 1000);
-
-    
   };
 
   const addPointsToMap = (
