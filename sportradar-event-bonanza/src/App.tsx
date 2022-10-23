@@ -114,19 +114,26 @@ function App() {
         <Map matches={matches} />
       </div>
       <div className="overlay_layer">
-        <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
-          <h1
+        <div className="app_title">
+          <a
+            href="/"
             style={{
-              fontSize: '3em',
-              fontFamily: 'monospace',
-              color: 'white',
+              textDecoration: 'none',
+              color: 'black',
             }}
           >
-            <img src={img} alt="logo" height={60} /> Event Bonanza InfoScreen
-            0.0.3
-          </h1>
-        </a>
-
+            <h1
+              style={{
+                fontSize: '3em',
+                fontFamily: 'monospace',
+                color: 'white',
+              }}
+            >
+              <img src={img} alt="logo" height={60} /> Event Bonanza InfoScreen
+              0.0.4
+            </h1>
+          </a>
+        </div>
         <div className="match_list">
           <MatchList matches={eventGetMatches} />
         </div>

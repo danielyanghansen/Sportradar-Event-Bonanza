@@ -34,12 +34,21 @@
   right: 0;
 }
 
+.app_title {
+  position: absolute;
+  top: 0;
+  left: 30rem;
+  right: 0;
+  height: 3em;
+}
+
 .match_list {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   width: 30em;
+  overflow: hidden;
 }
 
 .text_bar {
