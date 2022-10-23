@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import logo1024 from './logo1024.png';
+import img from './img.png';
 import './App.css';
 import Map from './components/Map';
 import { Col, Row, Container } from 'react-bootstrap';
@@ -7,9 +7,17 @@ import Image from 'react-bootstrap/Image';
 
 import MatchList from './components/MatchList';
 /* import { MatchEvent, Match, useReceiveEvents } from './hooks/useReceiveEvents'; */
-import { EventGetResponse, EventGetMatch, Sport, Match } from './types';
+import {
+  EventGetResponse,
+  EventGetMatch,
+  Sport,
+  MatchCoordinatesResponse,
+  Match,
+} from './types';
 import useSWR from 'swr';
 import SportSelectDropdown from './components/SportSelectDropdown';
+import Textbar from './components/Textbar';
+
 function mockOnClick() {
   console.log('OnClick triggered');
 }
@@ -22,30 +30,36 @@ function App() {
   const url =
     'https://dev.fn.sportradar.com/common/en/Europe:Oslo/gismo/event_get';
 
+  const coordsUrl = (matchId: number | string) =>
+    `https://dev.fn.sportradar.com/common/en/Europe:Berlin/gismo/match_coordinates/${matchId}`;
+
   const { data, error } = useSWR<EventGetResponse>(
     url,
     (url) => fetch(url).then((r) => r.json()),
     { refreshInterval: 10000 }
   );
 
-  const [matches, setMatches] = useState<EventGetMatch[] | Match[]>([]);
+  const [eventGetMatches, setEventGetMatches] = useState<EventGetMatch[]>([]);
+  const [matchCoordinates, setMatchCoordinates] = useState<
+    Record<number, MatchCoordinatesResponse>
+  >([]);
 
   useEffect(() => {
     if (!data) return;
 
     let fetched: EventGetMatch[] = data.doc[0].data
-      .filter((event) => {
-        if (!!sportFilter) {
-          return event._sid === sportFilter;
-        }
-        return false;
-      })
       .map((event) => event.match);
 
-    fetched = [...fetched, ...matches];
+    fetched = [...fetched, ...eventGetMatches];
 
-    setMatches(
+    setEventGetMatches(
       fetched
+        .filter((match) => {
+          if (!!sportFilter) {
+            return match._sid === sportFilter;
+          }
+          return false;
+        })
         .filter(
           (match, index) => fetched.find((m) => m._id === match._id) === match
         )
@@ -59,64 +73,92 @@ function App() {
     //only the first 10 elements
   }, [data, sportFilter]);
 
+  useEffect(() => {
+    const matchCoordinatePromises: Promise<
+      [number, MatchCoordinatesResponse]
+    >[] = eventGetMatches.map((match) => {
+      return !!matchCoordinates[match._id]
+        ? new Promise((res) => res([match._id, matchCoordinates[match._id]]))
+        : fetch(coordsUrl(match._id))
+            .then((r) => r.json())
+            .then((r) => [match._id, r]);
+    });
+
+    Promise.all(matchCoordinatePromises).then((values) => {
+      setMatchCoordinates(
+        values.reduce(
+          (acc, [id, match]) => ({ ...acc, [id]: match }),
+          matchCoordinates
+        )
+      );
+    });
+  }, [eventGetMatches]);
+
+  const matches = useMemo(() => {
+    const matches: Match[] = [];
+
+    for (const eventGetMatch of eventGetMatches) {
+      const coords =
+        matchCoordinates[eventGetMatch._id]?.doc[0].data.coordinates;
+      if (coords) {
+        matches.push({
+          ...eventGetMatch,
+          coordinates: coords.split(',').map(Number) as [number, number],
+          onClick: mockOnClick,
+        });
+      }
+    }
+
+    return matches;
+  }, [eventGetMatches, matchCoordinates]);
+
   return (
     <div className="App" style={{ alignContent: 'center' }}>
-      {/* text field and button to update endpoint */}
-      <a href="/" style={{ textDecoration: 'none', color: 'black' }}>
-        <Container>
-          <Row>
-            <Col md={2}>
-              <img src={logo1024} className="App-logo" alt="logo" height={90} />
-            </Col>
-            <Col>
-              <h1 style={{ fontFamily: 'monospace', color: 'white' }}>
-                Sportradar Event Bonanza InfoScreen 0.0.3
-              </h1>
-            </Col>
-          </Row>
-        </Container>
-      </a>
-
-      <Row sm={12}>
-        <Col sm={3}>
-          <p>
-            Her kan du se en oversikt over alle arrangementer som er i gang.
-          </p>
-          <Row>
-            <Col>
-              <SportSelectDropdown
-                sportIdList={[1, 2, 3, 4, 5, 6, 7]}
-                onClick={(filterId: number) => {
-                  setSportFilter(filterId);
-                  setMatches(matches.filter((match) => {
-                    return match._sid === filterId;
-                  }))
-                }}
-              />
-            </Col>
-            <Col style={{ width: '30%' }}>
-              <Image
-                src={
-                  'https://img.sportradar.com/ls/sports/big/' +
-                  (!!sportFilter ? sportFilter : 1).toString() +
-                  '.png'
-                }
-                style={{ maxHeight: '40px' }}
-              />
-            </Col>
-          </Row>
-          <MatchList matches={matches} />
-        </Col>
-        <Col>
-          <Map
-            matches={matches.map((match) => ({
-              ...match,
-              coordinates: [63.4326808, 10.4076614],
-              onClick: mockOnClick,
-            }))}
-          />
-        </Col>
-      </Row>
+      <div className="map_layer">
+        <Map matches={matches} />
+      </div>
+      <div className="overlay_layer">
+        <div className="app_title">
+          <a
+            href="/"
+            style={{
+              textDecoration: 'none',
+              color: 'black',
+            }}
+          >
+            <h1
+              style={{
+                fontSize: '3em',
+                fontFamily: 'monospace',
+                color: 'white',
+              }}
+            >
+              <img src={img} alt="logo" height={60} /> Event Bonanza InfoScreen
+              0.0.4
+            </h1>
+          </a>
+        </div>
+        <div className="match_list">
+        <SportSelectDropdown
+                  sportIdList={[1, 2, 3, 4, 5, 6, 7]}
+                  onClick={(filterId: number) => {
+                    setSportFilter(filterId);
+                  }}
+                />
+                <Image
+                  src={
+                    'https://img.sportradar.com/ls/sports/big/' +
+                    (!!sportFilter ? sportFilter : 1).toString() +
+                    '.png'
+                  }
+                  style={{ maxHeight: '40px' }}
+                />
+          <MatchList matches={eventGetMatches} />
+        </div>
+        <div className="text_bar">
+          <Textbar />
+        </div>
+      </div>
     </div>
   );
 }

@@ -21,7 +21,7 @@ const MatchList = ({ matches }: MatchListProps) => {
   }, [autoHighlightDuration, matches]);
 
   return (
-    <div style={{ maxHeight: '90%', overflowY: 'hidden', padding: '20px' }}>
+    <div style={{ overflowY: 'hidden', padding: '20px' }}>
       {!!matches ? (
         matches.map((match) => (
           <MatchListElement

@@ -23,6 +23,9 @@ const Map = ({ matches }: Props) => {
   const zoom = 5;
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
   let currentElement = 0;
+  let panInterval: NodeJS.Timer;
+  let pulseInterval: NodeJS.Timer;
+  let test = 9;
 
   const createMap = () => {
     map.current = mapContainer.current
@@ -44,54 +47,40 @@ const Map = ({ matches }: Props) => {
     createMap();
     createToolTipOnClick();
     setTimeout(() => {
-      addMapLayer(startLng, startLat);
+      addMapLayer(startLng, startLat, 5);
     }, 1000);
-    /*addPointsToMap(10.7565162, 59.911028, '', 13);
-    let stop: NodeJS.Timer;
-    setTimeout(() => {
-      map.current?.once('idle', () => {
-        map.current?.resize();
-        map.current?.zoomTo(3);
-        stop = setInterval(() => {
-          map.current?.panBy([0.2, 0], { duration: 1 });
-        }, 1);
-      });
-    }, 5000);
-    setTimeout(() => {
-      clearInterval(stop);
-    }, 20000);*/
   }, []);
 
-  setInterval(() => {
-    if (!!matches) {
-      matches[currentElement].coordinates &&
-        map.current?.flyTo({
-          center: [
-            matches[currentElement].coordinates!![1],
-            matches[currentElement].coordinates!![0],
-          ],
-          zoom: 5,
-          speed: 0.5,
-          curve: 1,
-          easing: (t) => t,
-        });
-      console.log(
-        getMatchName(matches[currentElement]),
-        matches[currentElement].coordinates!![0]
-      );
-      addPointsToMap(
-        matches[currentElement].coordinates!![0],
-        matches[currentElement].coordinates!![1],
-        '',
-        8
-      );
-      currentElement = (currentElement + 1) % matches.length;
-    }
-  }, flyBetweenPlacesInterval);
-
-  // setInterval(() => {
-  // map.current?.panBy([0.2, 0], { duration: 0.5 });
-  // }, 1);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!!matches) {
+        matches[currentElement].coordinates &&
+          map.current?.flyTo({
+            center: [
+              matches[currentElement].coordinates[1],
+              matches[currentElement].coordinates[0],
+            ],
+            zoom: 5,
+            speed: 0.5,
+            curve: 1,
+            easing: (t) => t,
+          });
+        console.log(
+          getMatchName(matches[currentElement]),
+          matches[currentElement].coordinates[0],
+          matches[currentElement].coordinates[1]
+        );
+        addPointsToMap(
+          matches[currentElement].coordinates[0],
+          matches[currentElement].coordinates[1],
+          '',
+          8
+        );
+        currentElement = (currentElement + 1) % matches.length;
+      }
+    }, flyBetweenPlacesInterval);
+    return () => clearInterval(interval);
+  });
 
   const createToolTipOnClick = () => {
     map.current?.on('click', (e) => {
@@ -117,9 +106,9 @@ const Map = ({ matches }: Props) => {
     });
   };
 
-  const addMapLayer = (lat: number, lng: number) => {
-    map.current &&
-      map.current?.addSource('eventsMapLayer', {
+  const addMapLayer = (lat: number, lng: number, size: number) => {
+    if (map.current) {
+      map.current.addSource('eventsMapLayer', {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
@@ -135,29 +124,39 @@ const Map = ({ matches }: Props) => {
           ],
         },
       });
-    map.current?.addLayer({
-      id: 'eventsMapLayer',
-      type: 'circle',
-      source: 'eventsMapLayer',
-      paint: {
-        'circle-color': '#fd0000',
-        'circle-radius': 8,
-        'circle-stroke-color': '#222222',
-        'circle-stroke-width': 2,
-      },
-    });
-    map.current?.setTerrain({
-      source: 'mapbox-dem',
-      exaggeration: [
+
+      map.current.addLayer({
+        id: 'eventsMapLayer',
+        type: 'circle',
+        source: 'eventsMapLayer',
+        paint: {
+          'circle-color': '#fd0000',
+          'circle-radius': size,
+          'circle-stroke-color': '#222222',
+          'circle-stroke-width': 2,
+        },
+      });
+
+      map.current.addSource('mapbox-dem', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14,
+      });
+      // add the DEM source as a terrain layer with exaggerated height
+      map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 3 });
+    }
+
+    pulseInterval = setInterval(() => {
+      test = (test + 1) % 20;
+      map.current?.setPaintProperty('eventsMapLayer', 'circle-radius', [
         'interpolate',
-        ['exponential', 0.5],
-        ['zoom'],
-        0,
-        0.2,
-        7,
-        1,
-      ],
-    });
+        ['linear'],
+        ['var', 'test'],
+        8,
+        20,
+      ]);
+    }, 1000);
   };
 
   const addPointsToMap = (
